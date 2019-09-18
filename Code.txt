@@ -1,0 +1,197 @@
+class Logo extends React.Component{
+  constructor(props){
+    super(props);
+    this.state={};
+  }
+  
+  toProfileNavigate = () => {
+    ReactDOM.render(<Profile menu={[
+    { name: 'Panner Masala', type: "veg", cost: 150 },
+    { name: 'Dal', type: "veg", cost: 50 },
+    { name: 'Gobi', type: "veg", cost: 70 },
+    { name: 'Chicken Curry', type: "nonveg", cost: 90 },
+    { name: 'Kadai Chicken', type: "nonveg", cost: 130 },
+    { name: 'Sweet', cost: 30 }
+    ]}/>,mountNode);
+  }
+  render(){
+    return(<div className="logo">
+        <button type="circle" className="logo-button" 
+          onClick={()=> this.toProfileNavigate()}>OFO</button><br/>
+        <span>Order Food Online</span>
+      </div>);
+  }
+}
+
+var sum = 0;
+
+class Profile extends React.Component{
+  constructor(props){
+    super(props);
+    this.state={totalAmount: 0, enableRemove : false,type: "all", itemCount: 0,addedItems:[{name:"",count:0}]};
+  }
+  
+  AddItem = (amount : int, item: string) => {
+    var count = this.state.itemCount;
+    sum = this.state.totalAmount+amount;
+    count++;
+    let addedItems =this.state.addedItems;
+    if(addedItems.length==1 && addedItems[0].count==0){
+      addedItems=[{name:item,count:1}];
+    }else{
+      let isAdded:false;
+      addedItems.forEach(x=>{
+        if(x.name == item){
+          x.count+=1;
+          isAdded=true;
+          return;
+        }
+        });
+      if(!isAdded){
+        addedItems.push({name:item,count:1});
+      }
+    }
+       this.setState({totalAmount: sum, enableRemove: true, itemCount: count,addedItems:addedItems});
+  }
+  
+  RemoveItem = (amount : int, item: string) => {
+    var count = this.state.itemCount;
+    var tt = this.state.totalAmount;
+    tt -= amount;
+    count--;
+       let addedItems =this.state.addedItems;
+    addedItems.forEach(x=>{
+        if(x.name == item){
+          x.count-=1;
+         return;
+        }
+        });
+    this.setState({totalAmount: tt, enableRemove: true, itemCount: count,addedItems:addedItems,userDetails:null});
+  }
+  
+  render(){
+    return(<div className="profile">
+        <h3 className="text-center">Profile</h3><br/>
+        <table align="center">
+          <tr>
+            <td>Name</td><td><input onChange={(value)=>this.setState({userDetails:{name:value.target.value}})}/></td>
+            </tr><br/>
+          <tr>
+            <td>Mobile</td><td><input/></td>
+            </tr><br/>
+          <tr>
+            <td>Gmail</td><td><input/></td>
+            </tr>
+          </table><br/>
+        <h3 className="text-center">Menu</h3><br/>
+        <div className="row">
+          <div className="col-xs-12 col-sm-4">
+        <button className="menu-button" onClick={() => this.setState({type: "all"})}>Show All</button>
+            </div>
+          <div className="col-xs-12 col-sm-4">
+        <button className="veg-menu-button" onClick={() => this.setState({type: "veg"})}><span class="veg-dot"></span>&nbsp;Veg</button>
+            </div>
+          <div className="col-xs-12 col-sm-4">
+        <button className="nonveg-menu-button" onClick={() => this.setState({type: "nonveg"})}><span class="nonveg-dot">
+          </span>&nbsp;Non-Veg</button>
+            </div>
+          </div><br/>
+            {this.props.menu.filter(x => this.state.type === 'all' || x.type === this.state.type).map(x => 
+                                 <Itemlist list={x} onAddItem={() => this.AddItem(x.cost, x.name)} 
+                                   onRemoveItem={() => this.RemoveItem(x.cost,x.name)}  enableRemove={this.state.enableRemove} 
+                                    itemCount={this.state.itemCount}
+                                   addedItems={this.state.addedItems}/>)}
+        {/*this.props.menu.filter(x => this.state.type === 'all' || x.type === this.state.type).map(x => 
+                                  <AddRemove list={x} onAddItem={() => this.AddItem(x.cost, x.name)} 
+                                   onRemoveItem={() => this.RemoveItem(x.cost,x.name)}  enableRemove={this.state.enableRemove} 
+                                    itemCount={this.state.itemCount}/>                             )*/}
+           <div className="row total">
+               <div className="col-xs-12 col-sm-8">Total</div>
+               <div className="col-xs-12 col-sm-4"> <span>{this.state.totalAmount}</span></div>
+            </div>
+        <div className="row">
+                  <button className="menu-button" onClick={()=>this.navigateNext()}>Submit</button>
+        </div>
+          </div>
+      );
+  }
+
+navigateNext = () => {
+       ReactDOM.render(<Review userDetails={this.state.userDetails}/>,mountNode);           
+}
+}
+
+class Itemlist extends React.Component{
+  constructor(props){
+    super(props);
+    this.state={};
+  }
+  static getDerivedStateFromProps(nextProps,prevState){
+    let count=0;
+    let enableRemove=false
+    nextProps.addedItems.length>0 && nextProps.addedItems.forEach(x=>{
+      if(x.name==nextProps.list.name && x.count>0){
+      count=x.count;
+      enableRemove=true;
+      }
+    });
+    return{
+      count:count,
+      enableRemove:enableRemove
+    }
+  }
+  render(){
+    
+    return(
+       <div className="row">
+        <div className="col-xs-12 col-sm-9 row">
+                 <div className="col-xs-12 col-sm-7">{this.props.list.name}</div>
+                 <div className="col-xs-12 col-sm-5"><span>&#8377;</span>{this.props.list.cost}</div>
+          </div>
+      <div className="col-xs-12 col-sm-3">
+                 <button className="add-remove-button" onClick={() => this.props.onAddItem(this.props.list.cost,
+                                                                                                      this.props.list.name)}>+</button>
+                 {this.state.count}
+                 {this.state.enableRemove && this.state.count > 0? 
+                 <button className="add-remove-button" onClick={() => this.props.onRemoveItem(this.props.list.cost,
+                                                                                             this.props.list.name)}>-</button>: null}
+             </div>
+         </div>
+    );
+  }
+}
+
+class AddRemove extends React.Component{
+   constructor(props){
+    super(props);
+    this.state={};
+   }
+     render(){
+       return(<div>
+        <button className="add-remove-button" onClick={() => this.props.onAddItem(this.props.list.cost,
+                                                                                                      this.props.list.name)}>+</button>
+                 {this.props.itemCount}
+                 {this.props.enableRemove && this.props.itemCount > 0? 
+                 <button className="add-remove-button" onClick={() => this.props.onRemoveItem(this.props.list.cost,
+                                                                                             this.props.list.name)}>-</button>: null}
+           </div>
+             );
+     }
+}
+
+class Review extends React.Component{
+     constructor(props){
+    super(props);
+    this.state={};
+   }
+
+     render(){
+       console.log(this.props.userDetails);
+       return(
+       <div>
+          {this.props.userDetails.name}
+           </div>
+       );
+     }  
+}
+ReactDOM.render(<Logo/>,mountNode);

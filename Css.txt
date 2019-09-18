@@ -1,0 +1,99 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+div.logo{
+  position: absolute;
+  top: 50%;
+  left: 45%;
+  text-align: center;
+}
+
+.logo-button{
+  background-color: #4CAF50;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+div.profile{
+  text-align: center;
+}
+
+.menu-button{
+  color: black;
+  padding: 10px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 10px 10px 10px 10px;
+}
+
+.veg-menu-button{
+  color: black;
+  padding: 10px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 10px 10px 10px 10px;
+}
+
+.nonveg-menu-button{
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 10px 10px 10px 10px;
+}
+
+.veg-dot {
+  height: 12px;
+  width: 12px;
+  background-color: green;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.nonveg-dot {
+  height: 12px;
+  width: 12px;
+  background-color: red;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.add-remove-button{
+  color: black;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 10px 10px 10px 10px;
+}
+
+div.total{
+  position: fixed;
+  width: 100%;
+  bottom: 60px;
+}
+
+
