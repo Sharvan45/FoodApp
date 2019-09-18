@@ -77,10 +77,10 @@ class Profile extends React.Component{
             <td>Name</td><td><input onChange={(value)=>this.setState({userDetails:{name:value.target.value}})}/></td>
             </tr><br/>
           <tr>
-            <td>Mobile</td><td><input/></td>
+            <td>Mobile</td><td><input onChange={(mobile)=>this.setState({userDetails:{mobile:mobile.target.value}})}/></td>
             </tr><br/>
           <tr>
-            <td>Gmail</td><td><input/></td>
+            <td>Gmail</td><td><input onChange={(gmail)=>this.setState({userDetails:{mail:gmail.target.value}})}/></td>
             </tr>
           </table><br/>
         <h3 className="text-center">Menu</h3><br/>
@@ -189,7 +189,13 @@ class Review extends React.Component{
        console.log(this.props.userDetails);
        return(
        <div>
-          {this.props.userDetails.name}
+           Hi {this.props.userDetails.name},
+             Thanks for choosing OFO.
+           <br/>
+           Please review your order details:
+           <br/>
+           Phone:{this.props.userDetails.mobile}<br/>
+           mail:{this.props.userDetails.mail}           
            </div>
        );
      }  
