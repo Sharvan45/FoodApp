@@ -15,7 +15,7 @@ class Logo extends React.Component{
     ]}/>,mountNode);
   }
   render(){
-    return(<div className="logo">
+        return(<div className="logo">
         <button type="circle" className="logo-button" 
           onClick={()=> this.toProfileNavigate()}>OFO</button><br/>
         <span>Order Food Online</span>
@@ -28,7 +28,7 @@ var sum = 0;
 class Profile extends React.Component{
   constructor(props){
     super(props);
-    this.state={totalAmount: 0, enableRemove : false,type: "all", itemCount: 0,addedItems:[{name:"",count:0}]};
+    this.state={totalAmount: 0, enableRemove : false,type: "all", itemCount: 0,addedItems:[{name:"",count:0,cost:0}],userDetails:{name:"",mail:"",mobile:""}};
   }
   
   AddItem = (amount : int, item: string) => {
@@ -37,18 +37,19 @@ class Profile extends React.Component{
     count++;
     let addedItems =this.state.addedItems;
     if(addedItems.length==1 && addedItems[0].count==0){
-      addedItems=[{name:item,count:1}];
+      addedItems=[{name:item,count:1,cost:amount}];
     }else{
       let isAdded:false;
       addedItems.forEach(x=>{
         if(x.name == item){
           x.count+=1;
+          x.cost+=amount;
           isAdded=true;
           return;
         }
         });
       if(!isAdded){
-        addedItems.push({name:item,count:1});
+        addedItems.push({name:item,count:1,cost:amount});
       }
     }
        this.setState({totalAmount: sum, enableRemove: true, itemCount: count,addedItems:addedItems});
@@ -74,13 +75,13 @@ class Profile extends React.Component{
         <h3 className="text-center">Profile</h3><br/>
         <table align="center">
           <tr>
-            <td>Name</td><td><input onChange={(value)=>this.setState({userDetails:{name:value.target.value}})}/></td>
+            <td>Name</td><td><input onChange={(value)=>this.onTextBoxChange("name",value.target.value)}/></td>
             </tr><br/>
           <tr>
-            <td>Mobile</td><td><input onChange={(mobile)=>this.setState({userDetails:{mobile:mobile.target.value}})}/></td>
+            <td>Mobile</td><td><input onChange={(mobile)=>this.onTextBoxChange("mobile",mobile.target.value)}/></td>
             </tr><br/>
           <tr>
-            <td>Gmail</td><td><input onChange={(gmail)=>this.setState({userDetails:{mail:gmail.target.value}})}/></td>
+            <td>Gmail</td><td><input onChange={(gmail)=>this.onTextBoxChange("mail",gmail.target.value)}/></td>
             </tr>
           </table><br/>
         <h3 className="text-center">Menu</h3><br/>
@@ -116,8 +117,14 @@ class Profile extends React.Component{
       );
   }
 
+onTextBoxChange(property,value){
+  let newState = this.state.userDetails;
+  newState[property]= value;
+  this.setState({userDetails:newState});
+}
+
 navigateNext = () => {
-       ReactDOM.render(<Review userDetails={this.state.userDetails}/>,mountNode);           
+       ReactDOM.render(<Review userDetails={this.state.userDetails} selectedItems={this.state.addedItems}/>,mountNode);           
 }
 }
 
@@ -184,18 +191,33 @@ class Review extends React.Component{
     super(props);
     this.state={};
    }
-
      render(){
        console.log(this.props.userDetails);
        return(
        <div>
-           Hi {this.props.userDetails.name},
+           Hi <b>{this.props.userDetails.name}</b>,<br/>
              Thanks for choosing OFO.
            <br/>
            Please review your order details:
            <br/>
            Phone:{this.props.userDetails.mobile}<br/>
-           mail:{this.props.userDetails.mail}           
+           mail:{this.props.userDetails.mail}      <br/>
+           <table>
+             <tr>
+               <th>Item</th>
+               <th>Quantity</th>
+               <th>Cost</th>
+             </tr>
+             {}
+           </table>
+            <button className="add-remove-button" onClick={() =>   ReactDOM.render(<Profile menu={[
+    { name: 'Panner Masala', type: "veg", cost: 150 },
+    { name: 'Dal', type: "veg", cost: 50 },
+    { name: 'Gobi', type: "veg", cost: 70 },
+    { name: 'Chicken Curry', type: "nonveg", cost: 90 },
+    { name: 'Kadai Chicken', type: "nonveg", cost: 130 },
+    { name: 'Sweet', cost: 30 }
+    ]} userDetails={this.props.userDetails}/>,mountNode)}>Add more</button>
            </div>
        );
      }  
