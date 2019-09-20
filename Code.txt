@@ -28,7 +28,7 @@ var sum = 0;
 class Profile extends React.Component{
   constructor(props){
     super(props);
-    this.state={totalAmount: 0, type: "all", addedItems:[{name:"",count:0}],userDetails:{name:"",mail:"",mobile:""}};
+    this.state={totalAmount: 0, type: "all", addedItems:[{name:"",count:0}],userDetails:{name:"",mail:"",mobile:""},errors:{name:"",mobile:"",mail:""}};
   }
  
   AddItem = (amount : int, item: string) => {
@@ -66,6 +66,38 @@ class Profile extends React.Component{
   }
  
   onTextBoxChange(property,value){
+    let isSuccessfull : boolean = false;
+    let errors= this.state.errors;
+    console.log(property=="name")
+    switch(property){
+      case "name":
+        if(!value.match(/^[a-zA-Z]+$/)){
+          errors.name= "Only letters";
+        }else{
+          isSuccessfull = true;
+          errors.name= "";
+         };
+       break;
+      case "mail":
+        let lastAtPos = value.lastIndexOf('@');
+        let lastDotPos = value.lastIndexOf('.');
+        if (!(lastAtPos < lastDotPos && lastAtPos > 0 && value.indexOf('@@') == -1 && lastDotPos > 2 && (value.length - lastDotPos) > 2)) {
+            errors.mail = "Email is not valid";
+          }else{
+             isSuccessfull = true;
+             errors.mail= "";
+          };
+        break;
+      default:
+          if(!value.match(/^[0-9]+$/)){
+          errors.mobile= "Only numbers";
+        }else{
+          isSuccessfull = true;
+          errors.mobile= "";
+         };
+       break;
+        break;
+    }
   let newState = this.state.userDetails;
   newState[property]= value;
   this.setState({userDetails:newState});
@@ -83,13 +115,16 @@ navigateNext = () => {
         <h3 className="text-center">Profile</h3><br/>
         <table align="center">
           <tr>
-            <td>Name</td><td><input onChange={(value)=>this.onTextBoxChange("name",value.target.value)}/></td>
+            <td>Name</td><td><input onBlur={(value)=>this.onTextBoxChange("name",value.target.value)}/>
+             <span style={{color: "red"}}>{this.state.errors["name"]}</span></td>
             </tr><br/>
           <tr>
-            <td>Mobile</td><td><input onChange={(mobile)=>this.onTextBoxChange("mobile",mobile.target.value)}/></td>
+            <td>Mobile</td><td><input onBlur={(mobile)=>this.onTextBoxChange("mobile",mobile.target.value)}/>
+            <span style={{color: "red"}}>{this.state.errors["mobile"]}</span></td>
             </tr><br/>
           <tr>
-            <td>Gmail</td><td><input onChange={(gmail)=>this.onTextBoxChange("mail",gmail.target.value)}/></td>
+            <td>Gmail</td><td><input onBlur={(gmail)=>this.onTextBoxChange("mail",gmail.target.value)}/>
+             <span style={{color: "red"}}>{this.state.errors["mail"]}</span></td>
             </tr>
           </table><br/>
         <h3 className="text-center">Menu</h3><br/>
