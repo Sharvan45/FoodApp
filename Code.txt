@@ -28,7 +28,7 @@ var sum = 0;
 class Profile extends React.Component{
   constructor(props){
     super(props);
-    this.state={totalAmount: 0, type: "all", addedItems:[{name:"",count:0}],userDetails:{name:"",mail:"",mobile:""},errors:{name:"",mobile:"",mail:""}};
+    this.state={totalAmount: 0, type: "all", addedItems:[{name:"",count:0}],userDetails:{name:"",mail:"",mobile:""},errors:{name:"",mobile:"",mail:"",total:""},isError:false};
   }
  
   AddItem = (amount : int, item: string) => {
@@ -49,7 +49,10 @@ class Profile extends React.Component{
         addedItems.push({name:item,count:1});
       }
     }
-       this.setState({totalAmount: sum, addedItems:addedItems});
+    let newState = this.state.userDetails;
+    let isError =newState.name=="" || newState.mobile=="" || newState.mail=="";
+    console.log(isError,newState.name);
+    this.setState({totalAmount: sum, addedItems:addedItems,isError:isError});
   }
  
   RemoveItem = (amount : int, item: string) => {
@@ -62,7 +65,7 @@ class Profile extends React.Component{
          return;
         }
        });
-    this.setState({totalAmount: tt, addedItems:addedItems,userDetails:null});
+        this.setState({totalAmount: tt, addedItems:addedItems,userDetails:null});
   }
  
   onTextBoxChange(property,value){
@@ -90,17 +93,26 @@ class Profile extends React.Component{
         break;
       default:
           if(!value.match(/^[0-9]+$/)){
-          errors.mobile= "Only numbers";
-        }else{
+           errors.mobile= "Only numbers";
+          }else if(!value.match(/^[0-9]{10}$/)){
+           errors.mobile= "Enter a valid Number";
+          }
+                 else{
           isSuccessfull = true;
           errors.mobile= "";
          };
        break;
         break;
     }
-  let newState = this.state.userDetails;
-  newState[property]= value;
-  this.setState({userDetails:newState});
+      errors.total="";
+  if(isSuccessfull){
+   let newState = this.state.userDetails;
+   newState[property]= value;
+   let isError:boolean =newState.name && newState.mobile && newState.mail;
+   this.setState({userDetails:newState,isError:!isError});
+  }else{
+    this.setState({isError:true});
+    }
 }
  
 navigateNext = () => {
@@ -148,7 +160,7 @@ navigateNext = () => {
                <div className="col-xs-12 col-sm-8">Total</div>
                <div className="col-xs-12 col-sm-4"> <span>{this.state.totalAmount}</span></div>
             </div>
-           <button className="submit-button" onClick={()=>this.navigateNext()}>Submit</button>
+           <button className="submit-button" onClick={()=>this.navigateNext()} disabled={this.state.totalAmount==0 || this.state.isError}>Submit</button>
           </div>
       );
   }
@@ -211,6 +223,9 @@ class Review extends React.Component{
     super(props);
     this.state={};
    }
+  this.displayOrder(){
+    
+  }
      render(){
        console.log(this.props.userDetails);
        return(
@@ -221,7 +236,15 @@ class Review extends React.Component{
            Please review your order details:
            <br/>
            Phone:{this.props.userDetails.mobile}<br/>
-           mail:{this.props.userDetails.mail}      <br/>
+           mail:{this.props.userDetails.mail}<br/>
+           <table>
+             <th>
+               <td>Name</td>
+               <td>Quantiry</td>
+               <td>Cost</td>
+             </th>
+             {this.displayOrder()}
+           </table>
             <button className="add-remove-button" onClick={() =>   ReactDOM.render(<Profile menu={[
     { name: 'Panner Masala', type: "veg", cost: 150 },
     { name: 'Dal', type: "veg", cost: 50 },
