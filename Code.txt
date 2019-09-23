@@ -28,25 +28,26 @@ var sum = 0;
 class Profile extends React.Component{
   constructor(props){
     super(props);
-    this.state={totalAmount: 0, type: "all", addedItems:[{name:"",count:0}],userDetails:{name:"",mail:"",mobile:""},errors:{name:"",mobile:"",mail:"",total:""},isError:false};
+    this.state={totalAmount: 0, type: "all", addedItems:[{name:"",count:0,cost:0}],userDetails:{name:"",mail:"",mobile:""},errors:{name:"",mobile:"",mail:"",total:""},isError:false};
   }
  
   AddItem = (amount : int, item: string) => {
     sum = this.state.totalAmount+amount;
     let addedItems =this.state.addedItems;
     if(addedItems.length==1 && addedItems[0].count==0){
-      addedItems=[{name:item,count:1}];
+      addedItems=[{name:item,count:1,cost:amount}];
     }else{
       let isAdded:false;
       addedItems.forEach(x=>{
         if(x.name == item){
           x.count+=1;
+          x.cost+=amount;
           isAdded=true;
           return;
         }
         });
       if(!isAdded){
-        addedItems.push({name:item,count:1});
+        addedItems.push({name:item,count:1,cost:amount});
       }
     }
     let newState = this.state.userDetails;
@@ -62,6 +63,7 @@ class Profile extends React.Component{
     addedItems.forEach(x=>{
         if(x.name == item){
           x.count-=1;
+          x.cost-=amount;
          return;
         }
        });
@@ -116,7 +118,7 @@ class Profile extends React.Component{
 }
  
 navigateNext = () => {
-       ReactDOM.render(<Review userDetails={this.state.userDetails} selectedItem={this.state.addedItems}/>,mountNode);          
+       ReactDOM.render(<Review userDetails={this.state.userDetails} selectedItems={this.state.addedItems} total={this.state.totalAmount}/>,mountNode);          
 }
  
   render(){
@@ -160,7 +162,8 @@ navigateNext = () => {
                <div className="col-xs-12 col-sm-8">Total</div>
                <div className="col-xs-12 col-sm-4"> <span>{this.state.totalAmount}</span></div>
             </div>
-           <button className="submit-button" onClick={()=>this.navigateNext()} disabled={this.state.totalAmount==0 || this.state.isError}>Submit</button>
+        {(this.state.totalAmount==0 || this.state.isError)?<button className="submit-button" disabled={true}>Submit</button>:<button className="submit-button" onClick={()=>this.navigateNext()}>Submit</button>  }
+           
           </div>
       );
   }
@@ -223,9 +226,19 @@ class Review extends React.Component{
     super(props);
     this.state={};
    }
-  this.displayOrder(){
-    
-  }
+
+displayRows = () => {
+  let rows =[];
+  this.props.selectedItems.forEach(x=>{
+    rows.push(<tr>
+        <td>{x.name}</td>
+        <td>{x.count}</td>
+        <td>{x.cost}</td>
+        </tr>
+        );
+  });
+  return(rows);
+}
      render(){
        console.log(this.props.userDetails);
        return(
@@ -240,10 +253,15 @@ class Review extends React.Component{
            <table>
              <th>
                <td>Name</td>
-               <td>Quantiry</td>
+               <td>Quantity</td>
                <td>Cost</td>
              </th>
-             {this.displayOrder()}
+             {this.displayRows()}
+             <tr>
+               <td>Total</td>
+               <td></td>
+               <td>{this.props.total}</td>
+             </tr>
            </table>
             <button className="add-remove-button" onClick={() =>   ReactDOM.render(<Profile menu={[
     { name: 'Panner Masala', type: "veg", cost: 150 },
